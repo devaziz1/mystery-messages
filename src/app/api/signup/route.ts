@@ -8,6 +8,7 @@ export async function POST(request: Request) {
   await dbConnection();
 
   try {
+
     const { username, email, password } = await request.json();
     const existingUserVerifiedByUsername = await userModel.findOne({
       username,
@@ -85,7 +86,7 @@ export async function POST(request: Request) {
     }
     return Response.json(
       {
-        success: false,
+        success: true,
         message: "User Register Successully, Please verify your email",
       },
       { status: 201 }
