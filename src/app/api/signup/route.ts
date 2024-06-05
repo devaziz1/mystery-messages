@@ -8,7 +8,6 @@ export async function POST(request: Request) {
   await dbConnection();
 
   try {
-
     const { username, email, password } = await request.json();
     const existingUserVerifiedByUsername = await userModel.findOne({
       username,
@@ -32,22 +31,22 @@ export async function POST(request: Request) {
     let verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
 
     if (existingUserByEmail) {
-        if(existingUserByEmail.isVerified){
-            return Response.json(
-              {
-                success: false,
-                message: "Email already exists",
-              },
-              { status: 400 }
-            );
-        }else{
-            const hashedPassword = await bcrypt.hash(password,10);
-            existingUserByEmail.password = hashedPassword;
-            existingUserByEmail.verifyCode = verifyCode;
-            existingUserByEmail.verifyCodeDate = new Date(Date.now() + 3600000);
+      if (existingUserByEmail.isVerified) {
+        return Response.json(
+          {
+            success: false,
+            message: "Email already exists",
+          },
+          { status: 400 }
+        );
+      } else {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        existingUserByEmail.password = hashedPassword;
+        existingUserByEmail.verifyCode = verifyCode;
+        existingUserByEmail.verifyCodeDate = new Date(Date.now() + 3600000);
 
-            await existingUserByEmail.save();
-        }
+        await existingUserByEmail.save();
+      }
     } else {
       const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -74,6 +73,9 @@ export async function POST(request: Request) {
       username,
       verifyCode
     );
+
+    console.log("````````` Email Verification Response `````````````");
+    console.log(emailResponse);
 
     if (!emailResponse.success) {
       return Response.json(
